@@ -82,3 +82,52 @@ getOptionChain.yahoo <- function(Symbols, Exp, ...)
   dftables
 }
 
+
+getOptionChain.eodhistoricaldata <- function(Symbols, Exp, country, api.key, ...)
+{
+
+  # Construct URL
+  urlExp <- paste0("https://eodhistoricaldata.com/api/options/", Symbols[1],
+                   ".", country, "?api_token=", api.key)
+  # Add expiry date to URL
+#  if(!checkExp)
+#    urlExp <- paste0(urlExp, "?&date=", Exp)
+
+  # Fetch data (jsonlite::fromJSON will handle connection)
+  tbl <- jsonlite::fromJSON(urlExp)
+  put.data <- tbl$data$options$PUT
+  call.data <- tbl$data$options$CALL
+  # Return all dates and expirations, unless the user specified Exp.
+  if (missing(Exp)) {
+    put.data <- do.call(rbind, put.data)
+    call.data <- do.call(rbind, call.data)
+  } else {
+    all.expiries.posix <- as.POSIXct(tbl$data$expirationDate, tz = "UTC")
+    # Ensure data exist for user-provided expiry date(s)
+    if(inherits(Exp, "Date"))
+      valid.expiries <- as.Date(all.expiries.posix) %in% Exp
+    else if(inherits(Exp, "POSIXt"))
+      valid.expiries <- all.expiries.posix %in% Exp
+    else if(is.character(Exp)) {
+      expiry.range <- range(unlist(lapply(Exp, .parseISO8601, tz="UTC")))
+      valid.expiries <- all.expiries.posix >= expiry.range[1] &
+        all.expiries.posix <= expiry.range[2]
+    }
+    if(all(!valid.expiries))
+      stop("Provided expiry date(s) not found. Available dates are: ",
+           paste(as.Date(all.expiries.posix), collapse=", "))
+
+    put.data <- put.data[valid.expiries]
+    call.data <- call.data[valid.expiries]
+    if (length(put.data) > 1 & length(call.data) > 1) {
+      put.data <- do.call(rbind, put.data)
+      call.data <- do.call(rbind, call.data)
+    } else {
+      put.data <- put.data[[1]]
+      call.data <- call.data[[1]]
+    }
+  }
+
+  dftables <- list(calls = call.data, puts = put.data)
+  dftables
+}
