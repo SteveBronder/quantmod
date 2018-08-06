@@ -14,7 +14,8 @@ getOptionChain(Symbols, Exp = NULL, src="yahoo", ...)
     If \code{Exp} is missing, only the front month contract will be returned.
  }
   \item{src}{ Source of data. Either \sQuote{yahoo} or \sQuote{eodhistoricaldata}. }
-  \item{country}{ The Country Code for the Option market.}
+  \item{country}{ The Country Code for the Option market used by \sQuote{eodhistoricalData}.
+   A full list of these can be found \href{https://eodhistoricaldata.com/knowledgebase/list-supported-exchanges/}{here}.}
   \item{api.key}{ The API key given by \sQuote{eodhistoricaldata}}
   \item{\dots}{ Additional parameters. }
 }
