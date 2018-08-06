@@ -34,8 +34,9 @@ If \code{Exp} is set to \code{NULL}, all expirations
 will be returned. Not explicitly setting will only
 return the front month.
 }
-\references{ \url{http://finance.yahoo.com} }
-\author{ Jeffrey A. Ryan, Joshua M. Ulrich }
+\references{ \url{http://finance.yahoo.com},
+ \url{https://eodhistoricaldata.com/knowledgebase/stock-options-data/}}
+\author{ Jeffrey A. Ryan, Joshua M. Ulrich, Steve Bronder }
 \examples{
 \dontrun{
 # Only the front-month expiry
